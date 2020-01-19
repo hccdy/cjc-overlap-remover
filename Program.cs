@@ -452,6 +452,7 @@ namespace CJCOR
                 }
                 for(int i = 0; i < 4096; i++)
                 {
+                    ign[i] = 0;
                     ovo[i] = 0;
                 }
                 lstcmd = 256;
@@ -496,6 +497,7 @@ namespace CJCOR
                         int offtm = Convert.ToInt32(offs[id][now]);
                         bool hvon = false;
                         int ntf = nt / 64;
+                        bool ig = false;
                         while (hno[ntf].Count <= TM)
                         {
                             hno[ntf].Add(0);
@@ -511,6 +513,7 @@ namespace CJCOR
                         if (noww[nt].l <= TM && noww[nt].r >= offtm && hvon)
                         {
                             ign[id]++;
+                            ig = true;
                         }
                         hno[nt / 64][TM] = Convert.ToUInt64(hno[nt / 64][TM]) | (1uL << (nt % 64));
                         if (noww[nt].r == -1 || noww[nt].l > offtm)
@@ -551,13 +554,21 @@ namespace CJCOR
                         {
                             noww[nt].l = TM;
                         }
-                        if (ign[id] == 0)
+                        if (!ig)
                         {
                             outtimetooutstr(TM - lsttm);
                             lsttm = TM;
                             outstr.Add((byte)cmd);
                             outstr.Add((byte)nt);
-                            outstr.Add((byte)ReadByte());
+                            if (sound)
+                            {
+                                outstr.Add(Convert.ToByte(Snd[nt][TM]));
+                                ReadByte();
+                            }
+                            else
+                            {
+                                outstr.Add((byte)ReadByte());
+                            }
                         }
                         else
                         {
@@ -718,7 +729,7 @@ namespace CJCOR
         [STAThread]
         static void Main(string[] args)
         {
-            Console.Title = ("Conjac Jelly Charlieyan's Overlap Remover Version 2.2.0.20191212");
+            Console.Title = ("Conjac Jelly Charlieyan's Overlap Remover Version 2.3.0.20200103");
             if (args.Length > 0)
             {
                 filein = args[0];
